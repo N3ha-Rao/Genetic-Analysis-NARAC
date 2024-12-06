@@ -24,14 +24,6 @@ The NARAC dataset comprises a case-control study of Rheumatoid Arthritis with 86
 4. **Polygenic Risk Scores (PRS)**:
    - Calculated PRS using summary statistics from European and Asian populations to predict RA risk in the NARAC dataset.
 
-## Key Findings
-
-- **HLA Region Association**: The HLA region on chromosome 6 exhibited the most significant association with RA across all analyses.
-- **Sex-Specific Differences**: Genetic associations were more pronounced in females, consistent with the higher prevalence of RA in women.
-- **Population-Specific PRS Performance**:
-  - The European-derived PRS explained a substantial proportion of variance in RA status within the NARAC dataset.
-  - The Asian-derived PRS showed a weaker association, highlighting the importance of ancestry-matched PRS models.
-
 ## Citations
 
 - Purcell S, Neale B, Todd-Brown K, et al. PLINK: A tool set for whole-genome association and population-based linkage analyses. *Am J Hum Genet*. 2007;81(3):559-575. [doi:10.1086/519795](https://doi.org/10.1086/519795)
