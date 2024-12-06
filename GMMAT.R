@@ -1,29 +1,30 @@
+# Load required libraries
 library(GMMAT)
 
-# Load phenotype data
-pheno <- read.table("RA_cleaned.fam", header = FALSE)
+# Load data
+pheno <- read.table("/projectnb/bs859/students/neharao/final-project/ra_cleaned.fam", header = FALSE)
 colnames(pheno) <- c("FID", "IID", "fa", "mo", "sex", "case")
 
-# Load principal component data
-pcs <- read.table("RA_pcs.txt", header = TRUE, as.is = TRUE)
+pcs <- read.table("/projectnb/bs859/students/neharao/final-project/RA_pcs.txt", header = TRUE)
 
-# Merge phenotype and principal component data
-pheno1 <- merge(pheno, pcs, by = c("FID", "IID"), all.x = TRUE)
+# Filter females only
+pheno_female <- pheno[pheno$sex == 2, ]  # assuming 2 represents females
 
-# Read in the genetic relationship matrix (GRM)
-grm <- as.matrix(read.table("TGEN_GRM.rel", header = FALSE))
+# Merge PC data with fam file data
+pheno_female_pcs <- merge(pheno_female, pcs, by.x = c("FID", "IID"), by.y = c("FID", "IID"), all.x = TRUE)
 
-# Read in the GRM ID file
-grm.ids <- read.table("TGEN_GRM.rel.id", header = FALSE)
+# Load GRM (genetic relationship matrix)
+grm <- as.matrix(read.table("q2a-grm-female.rel", header = FALSE))
+grm_ids <- read.table("q2a-grm-female.rel.id", header = FALSE)
 
-# Apply the IDs to the two dimensions of the GRM
-dimnames(grm)[[1]] <- dimnames(grm)[[2]] <- grm.ids[, 2]
+# Apply IDs to GRM matrix
+dimnames(grm)[[1]] <- dimnames(grm)[[2]] <- grm_ids[, 2]
 
-# Create Null models (no SNPs) for the score tests
-model1.0 <- glmmkin(case - 1 ~ 1, data = pheno1, id = "IID", kins = grm, family = binomial("logit")) #no covariate
-model2.0 <- glmmkin(case - 1 ~ PC1 + PC4, data = pheno1, id = "IID", kins = grm, family = binomial("logit")) # PC1 and PC4 covariates
+# Define models
+female_model_null <- glmmkin(case - 1 ~ 1, data = pheno_female_pcs, id = "IID", kins = grm, family = binomial("logit"))
+female_model_covariates <- glmmkin(case - 1 ~ PC2 + PC3, data = pheno_female_pcs, id = "IID", kins = grm, family = binomial("logit"))
 
-# Perform score tests for both models on the specified PLINK fileset
-geno.file <- "TGEN_cleaned"
-glmm.score(model1.0, infile = geno.file, outfile = "q2_model1_score")
-glmm.score(model2.0, infile = geno.file, outfile = "q2_model2_score")
+# Perform genome-wide association analysis
+geno.file <- "/projectnb/bs859/students/neharao/final-project/ra_cleaned"
+glmm.score(female_model_null, infile = geno.file, outfile = "test.glmm.score.female.null")
+glmm.score(female_model_covariates, infile = geno.file, outfile = "test.glmm.score.female.covariates")
